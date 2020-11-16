@@ -5,7 +5,7 @@ def dijkstra(info, origin, destiny):
         origin = nodo
         for a in arista:
             sValue = min(a)
-            # chequear
+            # chequear 
 
 
         

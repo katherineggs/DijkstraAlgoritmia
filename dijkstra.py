@@ -1,53 +1,44 @@
-def dijkstra(info, origin, destiny):
-    path=[]
-    camino = 0
-    for nodo,arista in info.items():
-        # verificar si existe un camino directo entre origen y destino
-        if(origin == nodo):
-            for k,value in arista.items():
-                if(destiny == k):
-                    if(value != -1):
-                        path.append(value)
+class Node:
+    def __init__(self, node):
+        self.node = node
+        self.adjacent = {}
+        # Set infinity for all
+        self.distance = -1
+        # All nodes unvisited        
+        self.visited = False  
+        # anterior
+        self.previous = None
 
-            keyNode = min(arista, key=arista.get)
-            mini = arista[keyNode]
-            camino = camino + mini
-            origin = keyNode
+    def addNext(self, next, weight=0):
+        # adjacent {next: peso} 
+        self.adjacent[next] = weight
 
-            dijkstra(info,origin,destiny)
-       
+    def getConnections(self):
+        # todas los nodos del dict
+        return self.adjacent.keys()  
 
-if __name__ == "__main__":
-    # numero de nodos 
-    cantNodos = int(input("Cuantos nodos desea: "))
-    nodos = []
-    for i in range(1,cantNodos+1):
-        nodos.append(i)
-# diccionario 
-    # key = num nodo
-    # value = lista de aristas en orden 
-    info={}
-    for i in range(len(nodos)):
-        aristas = {}
-        for j in range(len(nodos)):
-            if(i != j):
-                num = int(input("Ingrese la conexion entre "+ str(nodos[i])+ " - "+ str(nodos[j]) +": " ))
-                aristas[nodos[j]] = num
-        info[nodos[i]] = aristas
+    def getId(self):
+        # id del nodo
+        return self.node
 
-    # origen y destino
-    origin = int(input("Ingrese el origen: "))
-    destiny = int(input("Ingrese a donde se dirige: "))
-    
-    # print(info)
+    def getWeight(self, next):
+        # peso del nodo
+        return self.adjacent[next]
 
-    # origin = 1
-    # destiny = 4
-    
-    # arista = {1:6, 2:3, 3:1}
-    # key = min(arista, key=arista.get)
-    # print(key)
-    # print(arista[min(arista, key=arista.get)])
+    def setDistance(self, dist):
+        # poner distancia
+        self.distance = dist
 
+    def getDistance(self):
+        return self.distance
 
-    dijkstra(info, origin, destiny)
+    def setPrevious(self, prev):
+        # nodo anterior
+        self.previous = prev
+
+    def setVisited(self):
+        # por si ya lo recorrimos
+        self.visited = True
+
+    def __str__(self):
+        return str(self.node) + ' next: ' + str([x.id for x in self.next])

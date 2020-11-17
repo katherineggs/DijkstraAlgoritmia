@@ -2,18 +2,18 @@ import sys
 
 class Node:
     def __init__(self, node):
-        self.nodeId = node
+        self.node = node
         self.adjacent = {}
-        # infinity for all
+        # Set infinity for all
         self.distance = -1
-        # todos los nodos como si no sea han recorrido       
+        # All nodes unvisited        
         self.visited = False  
         # anterior
         self.previous = None
 
-    def addNext(self, siguiente, peso=0):
+    def addNext(self, sig, weight=0):
         # adjacent {sig: peso} 
-        self.adjacent[siguiente] = peso
+        self.adjacent[sig] = weight
 
     def getConnections(self):
         # todas los nodos del dict
@@ -21,11 +21,11 @@ class Node:
 
     def getId(self):
         # id del nodo
-        return self.nodeId
+        return self.node
 
-    def getWeight(self, siguiente):
-        # vvalue del dict
-        return self.adjacent[siguiente]
+    def getWeight(self, sig):
+        # peso del nodo
+        return self.adjacent[sig]
 
     def setDistance(self, dist):
         # poner distancia
@@ -43,7 +43,7 @@ class Node:
         self.visited = True
 
     def __str__(self):
-        return str(self.nodeId) + "adj: " + str([x.nodeId for x in self.adjacent])
+        return str(self.node) + ' next: ' + str([x.id for x in self.next])
 
 class Graph:
     def __init__(self):
@@ -56,7 +56,6 @@ class Graph:
     def addNode(self, node):
         self.cantNodos = self.cantNodos + 1
         newNode = Node(node)
-        # agregar al dict
         self.allNodes[node] = newNode
         return newNode
 
@@ -66,59 +65,55 @@ class Graph:
         else:
             return None
 
-    def addEdge(self, origen, destino, cost=0):
+    def addEdge(self, origen, destino, peso = 0):
         if origen not in self.allNodes:
             self.addNode(origen)
         if destino not in self.allNodes:
             self.addNode(destino)
 
-        self.allNodes[origen].addNext(self.allNodes[destino], cost)
-        self.allNodes[destino].addNext(self.allNodes[origen], cost)
+        self.allNodes[destino].addNext(self.allNodes[destino], peso)
+        self.allNodes[destino].addNext(self.allNodes[destino], peso)
 
     def getNodes(self):
         return self.allNodes.keys()
 
     def setAnterior(self, actual):
-        self.previous = actual
+        self.anterior = actual
 
     def getAnterior(self, actual):
-        return self.previous
+        return self.anterior
 
 def bestPath(v, path):
-    if v.previous:
-        path.append(v.previous.getId())
-        bestPath(v.previous, path)
+    if v.anterior:
+        path.append(v.anterior.getId())
+        bestPath(v.anterior, path)
     return
 
 import heapq
 
-def dijkstra(aGraph, origen, objetivo):
+def dijkstra(aGraph, origen, destino):
     print ("Dijkstra Algorithm")
+    # Set the distance for the start node to zero 
     origen.setDistance(0)
 
-    unvisited_queue = []
-    for v in aGraph:
-        unvisited_queue.append((v.getDistance(),v))
-    print(unvisited_queue)
-    
-    unvisited_queue.sort(key=lambda tup: tup[0])
-
-    # heapq.heapify(unvisited_queue)
+    # Put tuple pair into the priority queue
+    unvisited_queue = [(v.getDistance(),v) for v in aGraph]
+    heapq.heapify(unvisited_queue)
 
     while len(unvisited_queue):
-        # Pop a node with the smallest distance 
-        uv = unvisited_queue.pop(0)
+        # Pops a vertex with the smallest distance 
+        uv = heapq.heappop(unvisited_queue)
         actual = uv[1]
         actual.setVisited()
 
         #for next in v.adjacent:
-        for next in actual.adjacent:
+        for next in actual.next:
             # if visited, skip
             if next.visited:
                 continue
             newDistance = actual.getDistance() + actual.getWeight(next)
-
-            if int(newDistance) < int(actual.getWeight(next)):
+            
+            if int(newDistance) < int(next.getDistance()):
                 next.setDistance(newDistance)
                 next.setPrevious(actual)
                 print ('updated : actual = %s next = %s newDistance = %s' \
@@ -130,12 +125,10 @@ def dijkstra(aGraph, origen, objetivo):
         # Rebuild heap
         # 1. Pop every item
         while len(unvisited_queue):
-            unvisited_queue.pop(0)
+            heapq.heappop(unvisited_queue)
         # 2. Put all vertices not visited into the queue
         unvisited_queue = [(v.getDistance(),v) for v in aGraph if not v.visited]
-        unvisited_queue.sort(key=lambda tup: tup[0])
-
-        # heapq.heapify(unvisited_queue)
+        heapq.heapify(unvisited_queue)
     
 if __name__ == '__main__':
 
@@ -169,5 +162,5 @@ if __name__ == '__main__':
 
     target = g.getNode('e')
     path = [target.getId()]
-    bestPath(target, path)
+    shortest(target, path)
     print ('The shortest path : %s' %(path[::-1]))

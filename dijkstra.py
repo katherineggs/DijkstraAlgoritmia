@@ -1,11 +1,12 @@
-import sys
+import numpy
+from string import ascii_letters
 
 class Node:
     def __init__(self, node):
         self.nodeId = node
         self.adjacent = {}
         # infinity for all
-        self.distance = -1
+        self.distance = 100
         # todos los nodos como si no sea han recorrido       
         self.visited = False  
         # anterior
@@ -140,23 +141,19 @@ def dijkstra(aGraph, origen, objetivo):
 if __name__ == '__main__':
 
     g = Graph()
+    abc = list(string.ascii_lowercase)
 
-    g.addNode('a')
-    g.addNode('b')
-    g.addNode('c')
-    g.addNode('d')
-    g.addNode('e')
-    g.addNode('f')
+    # numero de nodos 
+    cantNodos = int(input("Cuantos nodos desea: "))
+    nodos = []
+    for i in range(1,cantNodos+1):
+        g.addNode(abc[i])
 
-    g.addEdge('a', 'b', 7)  
-    g.addEdge('a', 'c', 9)
-    g.addEdge('a', 'f', 14)
-    g.addEdge('b', 'c', 10)
-    g.addEdge('b', 'd', 15)
-    g.addEdge('c', 'd', 11)
-    g.addEdge('c', 'f', 2)
-    g.addEdge('d', 'e', 6)
-    g.addEdge('e', 'f', 9)
+     for i in range(len(nodos)):
+        for j in range(len(nodos)):
+            if(i != j):
+                num = int(input("Ingrese la conexion entre "+ str(nodos[i])+ " - "+ str(nodos[j]) +": " ))
+                g.addEdge(str(nodos[i]),str(nodos[j]), num)  
 
     print ('Graph data:')
     for v in g:
@@ -165,9 +162,12 @@ if __name__ == '__main__':
             wid = w.getId()
             print ('( %s , %s, %3d)'  % ( vid, wid, v.getWeight(w)))
 
-    dijkstra(g, g.getNode('a'), g.getNode('e')) 
+    origin = (input("Ingrese el nodo origen: "))
+    destiny = (input("Ingrese a donde se dirige: "))
 
-    target = g.getNode('e')
-    path = [target.getId()]
-    bestPath(target, path)
+    dijkstra(g, g.getNode(origen), g.getNode(destino)) 
+
+    objetivo = g.getNode(destino)
+    path = [objetivo.getId()]
+    bestPath(objetivo, path)
     print ('The shortest path : %s' %(path[::-1]))
